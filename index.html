@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Itinerary Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@openai/chat-api@0.2.0/dist/.indexjs"></script>
+    <script>
+        const chatApi = new OpenAI.ChatApi({ apiKey: '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' });
+
+        function generateItinerary(query) {
+            chatApi.createSession('davinci', { completion: { max_tokens: 60 } }).then(session => {
+                session.sendMessage({
+                    text: `Generate a travel itinerary for ${query}`,
+                    model: 'davinci',
+                    max_tokens: 100,
+                    stop: ['\n', 'Itinerary:']
+                }).then(result => {
+                    const itinerary = result.choices[0].text.trim();
+                    document.getElementById('itinerary').textContent = itinerary;
+                }).catch(error => {
+                    console.error(error);
+                });
+            }).catch(error => {
+                console.error(error);
+            });
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const query = document.getElementById('search').value;
+            generateItinerary(query);
+        }
+    </script>
+</head>
+<body>
+    <h1>Travel Itinerary Generator</h1>
+    <form onsubmit="handleSubmit(event)">
+        <label for="search">Search for a travel destination:</label>
+        <input type="text" id="search" placeholder="e.g. Tokyo, Japan">
+        <button type="submit">Generate Itinerary</button>
+    </form>
+    <div id="itinerary"></div>
+</body>
+</html>
